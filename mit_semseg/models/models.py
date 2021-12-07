@@ -112,7 +112,7 @@ class ModelBuilder:
     @staticmethod
     def build_decoder(arch='ppm_deepsup',
                       fc_dim=512, num_class=150,
-                      weights='', use_softmax=False):
+                      weights='', use_softmax='no'):
         arch = arch.lower()
         if arch == 'c1_deepsup':
             net_decoder = C1DeepSup(
@@ -412,6 +412,8 @@ class PPM(nn.Module):
         )
 
     def forward(self, conv_out, segSize=None):
+        assert segSize != None
+
         conv5 = conv_out[-1]
 
         input_size = conv5.size()
@@ -425,11 +427,12 @@ class PPM(nn.Module):
 
         x = self.conv_last(ppm_out)
 
-        if self.use_softmax:  # is True during inference
-            x = nn.functional.interpolate(
+        x = nn.functional.interpolate(
                 x, size=segSize, mode='bilinear', align_corners=False)
+
+        if self.use_softmax == 'softmax':
             x = nn.functional.softmax(x, dim=1)
-        else:
+        elif self.use_softmax == 'logsoftmax':
             x = nn.functional.log_softmax(x, dim=1)
         return x
 
