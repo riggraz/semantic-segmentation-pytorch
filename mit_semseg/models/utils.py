@@ -15,4 +15,10 @@ def load_url(url, model_dir='./pretrained', map_location=None):
     if not os.path.exists(cached_file):
         sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))
         urlretrieve(url, cached_file)
+
+    # necessario per permettere il funzionamento
+    # su un pc senza la gpu
+    if not torch.cuda.is_available():
+        map_location = 'cpu'
+
     return torch.load(cached_file, map_location=map_location)
