@@ -11,10 +11,28 @@ class SegmentationModuleBase(nn.Module):
 
     def pixel_acc(self, pred, label):
         _, preds = torch.max(pred, dim=1)
+
+        # valid è tensore di shape uguale a label
+        # e contiene tutti 0 o 1, per significare
+        # se la classe assegnata al pixel è valida (1) o meno (0)
+        # una classe è valida se ha indice >= 0
         valid = (label >= 0).long()
+
+        # acc_sum è uno scalare che indica il numero di
+        # predizioni corrette (cioè pixel nei quali preds == label)
+        # e inoltre valid è 1
         acc_sum = torch.sum(valid * (preds == label).long())
+
+        # pixel_sum è uno scalare che indica il numero di
+        # pixel validi
         pixel_sum = torch.sum(valid)
+
+        # acc è uno scalare risultante da:
+        # numero di pixel corretti / (numero totale di pixel + k)
+        # dove k è un valore piccolissimo (1 / 10mld),
+        # usato, credo, per evitare divisioni per 0
         acc = acc_sum.float() / (pixel_sum.float() + 1e-10)
+
         return acc
 
 
