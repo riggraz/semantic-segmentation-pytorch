@@ -131,7 +131,7 @@ class ModelBuilder:
     def build_decoder(arch='ppm_deepsup',
                       fc_dim=512, num_class=150,
                       weights='', use_softmax='no',
-                      start=True, n_layers=1):
+                      start=True, n_layers=1, final_conv=False):
         arch = arch.lower()
         if arch == 'c1_deepsup':
             net_decoder = C1DeepSup(
@@ -171,7 +171,8 @@ class ModelBuilder:
                 fc_dim=fc_dim,
                 use_softmax=use_softmax,
                 start=start,
-                n_layers=n_layers
+                n_layers=n_layers,
+                final_conv=final_conv
             )
         else:
             raise Exception('Architecture undefined!')
